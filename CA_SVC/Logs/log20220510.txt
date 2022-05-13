@@ -1,0 +1,458 @@
+2022-05-10 09:46:36.549 +07:00 [INF] Starting web host
+2022-05-10 09:46:38.338 +07:00 [ERR] LoggerRetentionServices Delete log out of retention failed.
+Microsoft.Data.SqlClient.SqlException (0x80131904): A connection was successfully established with the server, but then an error occurred during the login process. (provider: Shared Memory Provider, error: 0 - No process is on the other end of the pipe.)
+ ---> System.ComponentModel.Win32Exception (233): No process is on the other end of the pipe.
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParserStateObject.ThrowExceptionAndWarning(Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParserStateObject.ReadSniError(TdsParserStateObject stateObj, UInt32 error)
+   at Microsoft.Data.SqlClient.TdsParserStateObject.ReadSniSyncOverAsync()
+   at Microsoft.Data.SqlClient.TdsParserStateObject.TryReadNetworkPacket()
+   at Microsoft.Data.SqlClient.TdsParserStateObject.TryPrepareBuffer()
+   at Microsoft.Data.SqlClient.TdsParserStateObject.TryReadByte(Byte& value)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.TdsParser.Run(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.CompleteLogin(Boolean enlistOK)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.AttemptOneLogin(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean ignoreSniOpenTimeout, TimeoutTimer timeout, Boolean withFailover)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.LoginNoFailover(ServerInfo serverInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString connectionOptions, SqlCredential credential, TimeoutTimer timeout)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds.OpenLoginEnlist(TimeoutTimer timeout, SqlConnectionString connectionOptions, SqlCredential credential, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance)
+   at Microsoft.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, Boolean applyTransientFaultHandling, String accessToken, DbConnectionPool pool, SqlAuthenticationProviderManager sqlAuthProviderManager)
+   at Microsoft.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal& connection)
+   at Microsoft.Data.ProviderBase.DbConnectionPool.WaitForPendingOpen()
+--- End of stack trace from previous location where exception was thrown ---
+   at CA_SVC.Services.Logger.LoggerRetentionServices.Services(Object state) in D:\Work\CA_SVC\CA_SVC\Services\Logger\LoggerRetentionServices.cs:line 44
+ClientConnectionId:93707909-6f07-452b-ad73-11725a31c2ac
+Error Number:233,State:0,Class:20
+2022-05-10 09:46:39.848 +07:00 [INF] https GET /swagger request [Accept text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9,Accept-Encoding gzip, deflate, br,Accept-Language th,en;q=0.9,en-US;q=0.8,Host localhost:5001,User-Agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36,Upgrade-Insecure-Requests 1,:method GET,:authority localhost:5001,:scheme https,:path /swagger,sec-ch-ua " Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101",sec-ch-ua-mobile ?0,sec-ch-ua-platform "Windows",sec-fetch-site none,sec-fetch-mode navigate,sec-fetch-user ?1,sec-fetch-dest document] 
+2022-05-10 09:46:39.889 +07:00 [INF] https GET /swagger responsed 301 in 811 ms 
+2022-05-10 09:46:39.896 +07:00 [INF] https GET /swagger/index.html request [Accept text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9,Accept-Encoding gzip, deflate, br,Accept-Language th,en;q=0.9,en-US;q=0.8,Host localhost:5001,User-Agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36,Upgrade-Insecure-Requests 1,:method GET,:authority localhost:5001,:scheme https,:path /swagger/index.html,sec-fetch-site none,sec-fetch-mode navigate,sec-fetch-user ?1,sec-fetch-dest document,sec-ch-ua " Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101",sec-ch-ua-mobile ?0,sec-ch-ua-platform "Windows"] 
+2022-05-10 09:46:39.948 +07:00 [INF] https GET /swagger/index.html responsed 200 in 896 ms <!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="./swagger-ui.css">
+    <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+    <style>
+
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+
+        *,
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            margin: 0;
+            background: #fafafa;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <div id="swagger-ui"></div>
+
+    <!-- Workaround for https://github.com/swagger-api/swagger-editor/issues/1371 -->
+    <script>
+        if (window.navigator.userAgent.indexOf("Edge") > -1) {
+            console.log("Removing native Edge fetch in favor of swagger-ui's polyfill")
+            window.fetch = undefined;
+        }
+    </script>
+
+    <script src="./swagger-ui-bundle.js"></script>
+    <script src="./swagger-ui-standalone-preset.js"></script>
+    <script>
+        /* Source: https://gist.github.com/lamberta/3768814
+         * Parse a string function definition and return a function object. Does not use eval.
+         * @param {string} str
+         * @return {function}
+         *
+         * Example:
+         *  var f = function (x, y) { return x * y; };
+         *  var g = parseFunction(f.toString());
+         *  g(33, 3); //=> 99
+         */
+        function parseFunction(str) {
+            if (!str) return void (0);
+
+            var fn_body_idx = str.indexOf('{'),
+                fn_body = str.substring(fn_body_idx + 1, str.lastIndexOf('}')),
+                fn_declare = str.substring(0, fn_body_idx),
+                fn_params = fn_declare.substring(fn_declare.indexOf('(') + 1, fn_declare.lastIndexOf(')')),
+                args = fn_params.split(',');
+
+            args.push(fn_body);
+
+            function Fn() {
+                return Function.apply(this, args);
+            }
+            Fn.prototype = Function.prototype;
+
+            return new Fn();
+        }
+
+        window.onload = function () {
+            var configObject = JSON.parse('{"urls":[{"url":"/swagger/v1/swagger.json","name":"NetCore 3_1 API Template"}],"deepLinking":false,"displayOperationId":false,"defaultModelsExpandDepth":1,"defaultModelExpandDepth":1,"defaultModelRendering":"example","displayRequestDuration":false,"docExpansion":"list","showExtensions":false,"showCommonExtensions":false,"supportedSubmitMethods":["get","put","post","delete","options","head","patch","trace"]}');
+            var oauthConfigObject = JSON.parse('{"clientId":"admin-client_api_swaggerui","appName":"NetCore 3_1 API Template","scopeSeparator":" ","scopes":[],"useBasicAuthenticationWithAccessCodeGrant":false,"usePkceWithAuthorizationCodeGrant":true}');
+
+            // Workaround for https://github.com/swagger-api/swagger-ui/issues/5945
+            configObject.urls.forEach(function (item) {
+                if (item.url.startsWith("http") || item.url.startsWith("/")) return;
+                item.url = window.location.href.replace("index.html", item.url).split('#')[0];
+            });
+
+            // If validatorUrl is not explicitly provided, disable the feature by setting to null
+            if (!configObject.hasOwnProperty("validatorUrl"))
+                configObject.validatorUrl = null
+
+            // If oauth2RedirectUrl isn't specified, use the built-in default
+            if (!configObject.hasOwnProperty("oauth2RedirectUrl"))
+                configObject.oauth2RedirectUrl = window.location.href.replace("index.html", "oauth2-redirect.html").split('#')[0];
+
+            // Apply mandatory parameters
+            configObject.dom_id = "#swagger-ui";
+            configObject.presets = [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset];
+            configObject.layout = "StandaloneLayout";
+
+            // Parse and add interceptor functions
+            var interceptors = JSON.parse('{"RequestInterceptorFunction":null,"ResponseInterceptorFunction":null}');
+            if (interceptors.RequestInterceptorFunction)
+                configObject.requestInterceptor = parseFunction(interceptors.RequestInterceptorFunction);
+            if (interceptors.ResponseInterceptorFunction)
+                configObject.responseInterceptor = parseFunction(interceptors.ResponseInterceptorFunction);
+
+            // Begin Swagger UI call region
+
+            const ui = SwaggerUIBundle(configObject);
+
+            ui.initOAuth(oauthConfigObject);
+
+            // End Swagger UI call region
+
+            window.ui = ui
+        }
+    </script>
+</body>
+</html>
+
+2022-05-10 09:46:40.143 +07:00 [INF] https GET /swagger/v1/swagger.json request [Accept application/json,*/*,Accept-Encoding gzip, deflate, br,Accept-Language th,en;q=0.9,en-US;q=0.8,Host localhost:5001,Referer https://localhost:5001/swagger/index.html,User-Agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36,:method GET,:authority localhost:5001,:scheme https,:path /swagger/v1/swagger.json,sec-ch-ua " Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101",sec-ch-ua-mobile ?0,sec-ch-ua-platform "Windows",sec-fetch-site same-origin,sec-fetch-mode cors,sec-fetch-dest empty] 
+2022-05-10 09:46:40.241 +07:00 [INF] https GET /swagger/v1/swagger.json responsed 200 in 143 ms {
+  "openapi": "3.0.1",
+  "info": {
+    "title": "NetCore 3_1 API Template",
+    "description": "NetCore 3_1 API Template",
+    "version": "v2"
+  },
+  "paths": {
+    "/uploadpdfsigning": {
+      "post": {
+        "tags": [
+          "CAControllers"
+        ],
+        "summary": "PDF Signing",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "PdfFile"
+                ],
+                "type": "object",
+                "properties": {
+                  "PdfFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "PdfFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorize"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploadpdfsigningsignature": {
+      "post": {
+        "tags": [
+          "CAControllers"
+        ],
+        "summary": "  PDF Signing\r\n            \r\nแบบแสดงภาพรูปลายเซ็น",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "ImgFile",
+                  "PdfFile"
+                ],
+                "type": "object",
+                "properties": {
+                  "PdfFile": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "ImgFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "PdfFile": {
+                  "style": "form"
+                },
+                "ImgFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorize"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploadpdfsigningnosignature": {
+      "post": {
+        "tags": [
+          "CAControllers"
+        ],
+        "summary": "  PDF Signing\r\n            \r\nแบบไม่แสดงภาพรูปลายเซ็น",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "PdfFile"
+                ],
+                "type": "object",
+                "properties": {
+                  "PdfFile": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "PdfFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorize"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/uploadfile/part": {
+      "get": {
+        "tags": [
+          "CAControllers"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json;odata.metadata=minimal;odata.streaming=true": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=minimal;odata.streaming=false": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=minimal": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=full;odata.streaming=true": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=full;odata.streaming=false": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=full": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=none;odata.streaming=true": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=none;odata.streaming=false": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.metadata=none": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.streaming=true": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json;odata.streaming=false": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/prs.odatatestxx-odata": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadPDFFromPartDto_Requesr"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UploadPDFFromPartDto_Requesr": {
+        "required": [
+          "part"
+        ],
+        "type": "object",
+        "properties": {
+          "part": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://demoauthserver.devsiamsmile.com/connect/authorize",
+            "tokenUrl": "https://demoauthserver.devsiamsmile.com/connect/token",
+            "scopes": {
+              "employeeapi": "Employee API",
+              "openid": "OpenId",
+              "profile": "User's profile",
+              "role": "User's role"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+2022-05-10 09:47:54.349 +07:00 [INF] https POST /uploadpdfsigning request [Content-Type multipart/form-data; boundary=----WebKitFormBoundaryP5wWBz4hmqp0dOEA,Accept */*,Accept-Encoding gzip, deflate, br,Accept-Language th,en;q=0.9,en-US;q=0.8,Host localhost:5001,Referer https://localhost:5001/swagger/index.html,User-Agent Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36,Origin https://localhost:5001,Content-Length 189,:method POST,:authority localhost:5001,:scheme https,:path /uploadpdfsigning,sec-ch-ua " Not A;Brand";v="99", "Chromium";v="101", "Google Chrome";v="101",sec-ch-ua-mobile ?0,sec-ch-ua-platform "Windows",sec-fetch-site same-origin,sec-fetch-mode cors,sec-fetch-dest empty] ------WebKitFormBoundaryP5wWBz4hmqp0dOEAContent-Disposition: form-data; name="PdfFile"; filename="Untitled.jpg"Content-Type: image/jpeg------WebKitFormBoundaryP5wWBz4hmqp0dOEA--
+2022-05-10 09:47:55.023 +07:00 [INF] https POST /uploadpdfsigning responsed 200 in 347 ms {"data":null,"isSuccess":false,"message":"Wrong File Type (access file .PDF)","serverDateTime":"2022-05-10T09:47:54.9241193+07:00"}
