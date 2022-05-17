@@ -272,7 +272,7 @@ namespace CA_SVC.Services.CA
                     overwriteOriginal = true,
                     visibleSignature = "Graphics",
                     visibleSignaturePage = 1,
-                    visibleSignatureRectangle = "0.201,0.697,0.282,0.109",
+                    visibleSignatureRectangle = "0.7, 0.850, 0.2, 0.1",
                     visibleSignatureImagePath = img
                 };
 
