@@ -219,9 +219,6 @@ namespace CA_SVC.Services.CA
         {
             try
             {
-                //var fileExtensionPdf = Path.GetExtension(data.PdfFile.FileName);
-                //var fileExtensionImg = Path.GetExtension(data.ImgFile.FileName);
-
                 //if (fileExtensionPdf != ".pdf")
                 //    return ResponseResult.Failure<UploadFileDto_Response>("Wrong File Type (access file .PDF)");
 
