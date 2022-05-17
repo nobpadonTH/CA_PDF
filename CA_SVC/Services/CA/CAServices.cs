@@ -327,13 +327,22 @@ namespace CA_SVC.Services.CA
                 //if (fileExtensionPdf != ".pdf")
                 //    return ResponseResult.Failure<UploadFileDto_Response>("Wrong File Type (access file .PDF)");
 
-                string pdf = data.PdfFileBase64;//string.Empty;
-                //using (var ms = new MemoryStream())
-                //{
-                //    data.PdfFile.CopyTo(ms);
-                //    var fileBytes = ms.ToArray();
-                //    pdf = Convert.ToBase64String(fileBytes);
-                //}
+                var part = $"{data.SaveFilePart}\\{data.BillNo}";
+                var fileName = $"{data.BillNo}_tmp.pdf";
+                var fileNameCA = $"{data.BillNo}.pdf";
+
+                // Try to create the directory.
+                if (!Directory.Exists(part))
+                {
+                    Directory.CreateDirectory(part);
+                }
+
+                string pdf = data.PdfFileBase64;
+                using (FileStream stream = File.Create(part + "\\" + fileName))
+                {
+                    byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
+                    stream.Write(byteArray, 0, byteArray.Length);
+                }
 
                 var obj = new
                 {
@@ -357,22 +366,13 @@ namespace CA_SVC.Services.CA
                     throw new InvalidOperationException(response.StatusDescription, response.ErrorException);
                 }
 
-                var part = "D:\\Work\\CA\\smileTPA";
-                var fileName = $"file_{DateTime.Now.ToString("yyyyMMddHHmm")}.pdf";
-
-                // Try to create the directory.
-                if (!Directory.Exists(part))
-                {
-                    Directory.CreateDirectory(part);
-                }
-
                 //create file
-                using (FileStream stream = File.Create(part + "\\" + fileName))
+                using (FileStream stream = File.Create(part + "\\" + fileNameCA))
                 {
                     byte[] byteArray = Convert.FromBase64String(response.Data.pdfData);
                     stream.Write(byteArray, 0, byteArray.Length);
                 }
-                string fullPath = part + "\\" + fileName;
+                string fullPath = part + "\\" + fileNameCA;
                 var dto = new UploadFileDto_Response
                 {
                     IsResult = true,
