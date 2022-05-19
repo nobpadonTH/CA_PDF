@@ -133,7 +133,7 @@ namespace CA_SVC.Services.CA
                 //    return ResponseResult.Failure<UploadFileDto_Response>("Wrong File Type (access file .PDF)");
 
                 var part = $"{data.SaveFilePart}\\{data.BillNo}";
-                var fileName = $"{data.BillNo}_tmp.pdf";
+                var fileName_tmp = $"{data.BillNo}_tmp.pdf";
                 var fileNameCA = $"{data.BillNo}.pdf";
 
                 // Try to create the directory.
@@ -142,15 +142,15 @@ namespace CA_SVC.Services.CA
                     Directory.CreateDirectory(part);
                 }
 
-                using (FileStream stream = File.Create(part + "\\" + fileName))
-                {
-                    byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
-                    stream.Write(byteArray, 0, byteArray.Length);
-                }
-
                 //เช็ค bill นี้เคยยิ่ง CA หรือยัง
                 if (!File.Exists($"{data.SaveFilePart}\\{data.BillNo}\\{fileNameCA}"))
                 {
+                    using (FileStream stream = File.Create(part + "\\" + fileName_tmp))
+                    {
+                        byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
+                        stream.Write(byteArray, 0, byteArray.Length);
+                    }
+
                     string pdf = data.PdfFileBase64;
                     //using (var ms = new MemoryStream())
                     //{
@@ -191,7 +191,7 @@ namespace CA_SVC.Services.CA
                     var dto = new UploadFileDto_Response
                     {
                         IsResult = true,
-                        Data = fullPath,
+                        Data = response.Data.pdfData,
                         Msg = TEXTSUCCESS
                     };
 
@@ -200,10 +200,20 @@ namespace CA_SVC.Services.CA
                 else
                 {
                     string fullPath = $"{data.SaveFilePart}\\{data.BillNo}\\{fileNameCA}";
+
+                    FileInfo files = new FileInfo(fullPath);
+                    string pdfDataBase64 = string.Empty;
+                    MemoryStream ms = new MemoryStream();
+
+                    using (FileStream file = new FileStream(files.FullName, FileMode.Open, FileAccess.Read))
+                        file.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    pdfDataBase64 = Convert.ToBase64String(fileBytes);
+
                     var dto = new UploadFileDto_Response
                     {
                         IsResult = true,
-                        Data = fullPath,
+                        Data = pdfDataBase64,
                         Msg = TEXTSUCCESS
                     };
                     return ResponseResult.Success(dto);
@@ -211,6 +221,11 @@ namespace CA_SVC.Services.CA
             }
             catch (Exception ex)
             {
+                var part = $"{data.SaveFilePart}\\{data.BillNo}";
+                if (Directory.Exists(part))
+                {
+                    Directory.Delete(part, true);
+                }
                 return ResponseResult.Failure<UploadFileDto_Response>(ex.Message);
             }
         }
@@ -226,7 +241,7 @@ namespace CA_SVC.Services.CA
                 //    return ResponseResult.Failure<UploadFileDto_Response>("Wrong File Type (access file .jpeg or .jpg)");
 
                 var part = $"{data.SaveFilePart}\\{data.BillNo}";
-                var fileName = $"{data.BillNo}_tmp.pdf";
+                var fileName_tmp = $"{data.BillNo}_tmp.pdf";
                 var fileNameCA = $"{data.BillNo}.pdf";
 
                 // Try to create the directory.
@@ -235,85 +250,103 @@ namespace CA_SVC.Services.CA
                     Directory.CreateDirectory(part);
                 }
 
-                using (FileStream stream = File.Create(part + "\\" + fileName))
+                //เช็ค bill นี้เคยยิ่ง CA หรือยัง
+                if (!File.Exists($"{data.SaveFilePart}\\{data.BillNo}\\{fileNameCA}"))
                 {
-                    byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
-                    stream.Write(byteArray, 0, byteArray.Length);
+                    using (FileStream stream = File.Create(part + "\\" + fileName_tmp))
+                    {
+                        byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
+                        stream.Write(byteArray, 0, byteArray.Length);
+                    }
+
+                    string pdf = data.PdfFileBase64;
+                    string img = data.ImgFileBase64;
+
+                    var obj = new
+                    {
+                        pdfData = pdf,
+                        sadData = "",
+                        cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
+                        reason = "ทดสอบการลงนาม",
+                        location = "TH",
+                        certifyLevel = "NON-CERTIFY",
+                        hashAlgorithm = "sha-256",
+                        overwriteOriginal = true,
+                        visibleSignature = "Graphics",
+                        visibleSignaturePage = 1,
+                        visibleSignatureRectangle = "0.7, 0.850, 0.2, 0.1",
+                        visibleSignatureImagePath = img
+                    };
+
+                    // Create request
+                    var request = new RestRequest(_ca, DataFormat.Json);
+                    request.AddJsonBody(obj);
+
+                    // Attemp request
+                    var response = await Task.FromResult(_client.Post<ResponsePDFDto_Response>(request));
+
+                    // Check data is valid
+                    if (response.Data is null)
+                    {
+                        throw new InvalidOperationException(response.StatusDescription, response.ErrorException);
+                    }
+
+                    //var part = "D:\\Work\\CA\\smileTPA";
+                    //var fileName = $"file_{DateTime.Now.ToString("yyyyMMddHHmm")}.pdf";
+
+                    // Try to create the directory.
+                    if (!Directory.Exists(part))
+                    {
+                        Directory.CreateDirectory(part);
+                    }
+
+                    //create file
+
+                    using (FileStream stream = File.Create(part + "\\" + fileNameCA))
+                    {
+                        byte[] byteArray = Convert.FromBase64String(response.Data.pdfData);
+                        stream.Write(byteArray, 0, byteArray.Length);
+                    }
+                    string fullPath = $"{part}\\{fileNameCA}";
+                    var dto = new UploadFileDto_Response
+                    {
+                        IsResult = true,
+                        Data = response.Data.pdfData,
+                        Msg = TEXTSUCCESS
+                    };
+
+                    return ResponseResult.Success(dto);
                 }
-
-                string pdf = data.PdfFileBase64;
-                //using (var ms = new MemoryStream())
-                //{
-                //    data.PdfFile.CopyTo(ms);
-                //    var fileBytes = ms.ToArray();
-                //    pdf = Convert.ToBase64String(fileBytes);
-                //}
-
-                string img = data.ImgFileBase64;
-                //using (var ms = new MemoryStream())
-                //{
-                //    data.ImgFile.CopyTo(ms);
-                //    var fileBytes = ms.ToArray();
-                //    img = Convert.ToBase64String(fileBytes);
-                //}
-
-                var obj = new
+                else
                 {
-                    pdfData = pdf,
-                    sadData = "",
-                    cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
-                    reason = "ทดสอบการลงนาม",
-                    location = "TH",
-                    certifyLevel = "NON-CERTIFY",
-                    hashAlgorithm = "sha-256",
-                    overwriteOriginal = true,
-                    visibleSignature = "Graphics",
-                    visibleSignaturePage = 1,
-                    visibleSignatureRectangle = "0.7, 0.850, 0.2, 0.1",
-                    visibleSignatureImagePath = img
-                };
+                    string fullPath = $"{data.SaveFilePart}\\{data.BillNo}\\{fileNameCA}";
 
-                // Create request
-                var request = new RestRequest(_ca, DataFormat.Json);
-                request.AddJsonBody(obj);
+                    FileInfo files = new FileInfo(fullPath);
+                    string pdfDataBase64 = string.Empty;
+                    MemoryStream ms = new MemoryStream();
 
-                // Attemp request
-                var response = await Task.FromResult(_client.Post<ResponsePDFDto_Response>(request));
+                    //pdf to Base64
+                    using (FileStream file = new FileStream(files.FullName, FileMode.Open, FileAccess.Read))
+                        file.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    pdfDataBase64 = Convert.ToBase64String(fileBytes);
 
-                // Check data is valid
-                if (response.Data is null)
-                {
-                    throw new InvalidOperationException(response.StatusDescription, response.ErrorException);
+                    var dto = new UploadFileDto_Response
+                    {
+                        IsResult = true,
+                        Data = pdfDataBase64,
+                        Msg = TEXTSUCCESS
+                    };
+                    return ResponseResult.Success(dto);
                 }
-
-                //var part = "D:\\Work\\CA\\smileTPA";
-                //var fileName = $"file_{DateTime.Now.ToString("yyyyMMddHHmm")}.pdf";
-
-                // Try to create the directory.
-                if (!Directory.Exists(part))
-                {
-                    Directory.CreateDirectory(part);
-                }
-
-                //create file
-
-                using (FileStream stream = File.Create(part + "\\" + fileNameCA))
-                {
-                    byte[] byteArray = Convert.FromBase64String(response.Data.pdfData);
-                    stream.Write(byteArray, 0, byteArray.Length);
-                }
-                string fullPath = $"{part}\\{fileNameCA}";
-                var dto = new UploadFileDto_Response
-                {
-                    IsResult = true,
-                    Data = fullPath,
-                    Msg = TEXTSUCCESS
-                };
-
-                return ResponseResult.Success(dto);
             }
             catch (Exception ex)
             {
+                var part = $"{data.SaveFilePart}\\{data.BillNo}";
+                if (Directory.Exists(part))
+                {
+                    Directory.Delete(part, true);
+                }
                 return ResponseResult.Failure<UploadFileDto_Response>(ex.Message);
             }
         }
@@ -337,53 +370,83 @@ namespace CA_SVC.Services.CA
                     Directory.CreateDirectory(part);
                 }
 
-                string pdf = data.PdfFileBase64;
-                using (FileStream stream = File.Create(part + "\\" + fileName))
+                //เช็ค bill นี้เคยยิ่ง CA หรือยัง
+                if (!File.Exists($"{data.SaveFilePart}\\{data.BillNo}\\{fileNameCA}"))
                 {
-                    byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
-                    stream.Write(byteArray, 0, byteArray.Length);
+                    string pdf = data.PdfFileBase64;
+                    using (FileStream stream = File.Create(part + "\\" + fileName))
+                    {
+                        byte[] byteArray = Convert.FromBase64String(data.PdfFileBase64);
+                        stream.Write(byteArray, 0, byteArray.Length);
+                    }
+
+                    var obj = new
+                    {
+                        pdfData = pdf,
+                        cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
+                        certifyLevel = "NON-CERTIFY",
+                        visibleSignature = "Invisible",
+                        overwriteOriginal = true
+                    };
+
+                    // Create request
+                    var request = new RestRequest(_ca, DataFormat.Json);
+                    request.AddJsonBody(obj);
+
+                    // Attemp request
+                    var response = await Task.FromResult(_client.Post<ResponsePDFDto_Response>(request));
+
+                    // Check data is valid
+                    if (response.Data is null)
+                    {
+                        throw new InvalidOperationException(response.StatusDescription, response.ErrorException);
+                    }
+
+                    //create file
+                    using (FileStream stream = File.Create(part + "\\" + fileNameCA))
+                    {
+                        byte[] byteArray = Convert.FromBase64String(response.Data.pdfData);
+                        stream.Write(byteArray, 0, byteArray.Length);
+                    }
+                    string fullPath = part + "\\" + fileNameCA;
+                    var dto = new UploadFileDto_Response
+                    {
+                        IsResult = true,
+                        Data = response.Data.pdfData,
+                        Msg = TEXTSUCCESS
+                    };
+
+                    return ResponseResult.Success(dto);
                 }
-
-                var obj = new
+                else
                 {
-                    pdfData = pdf,
-                    cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
-                    certifyLevel = "NON-CERTIFY",
-                    visibleSignature = "Invisible",
-                    overwriteOriginal = true
-                };
+                    string fullPath = $"{data.SaveFilePart}\\{data.BillNo}\\{fileNameCA}";
 
-                // Create request
-                var request = new RestRequest(_ca, DataFormat.Json);
-                request.AddJsonBody(obj);
+                    FileInfo files = new FileInfo(fullPath);
+                    string pdfDataBase64 = string.Empty;
+                    MemoryStream ms = new MemoryStream();
 
-                // Attemp request
-                var response = await Task.FromResult(_client.Post<ResponsePDFDto_Response>(request));
+                    using (FileStream file = new FileStream(files.FullName, FileMode.Open, FileAccess.Read))
+                        file.CopyTo(ms);
+                    var fileBytes = ms.ToArray();
+                    pdfDataBase64 = Convert.ToBase64String(fileBytes);
 
-                // Check data is valid
-                if (response.Data is null)
-                {
-                    throw new InvalidOperationException(response.StatusDescription, response.ErrorException);
+                    var dto = new UploadFileDto_Response
+                    {
+                        IsResult = true,
+                        Data = pdfDataBase64,
+                        Msg = TEXTSUCCESS
+                    };
+                    return ResponseResult.Success(dto);
                 }
-
-                //create file
-                using (FileStream stream = File.Create(part + "\\" + fileNameCA))
-                {
-                    byte[] byteArray = Convert.FromBase64String(response.Data.pdfData);
-                    stream.Write(byteArray, 0, byteArray.Length);
-                }
-                string fullPath = part + "\\" + fileNameCA;
-                var dto = new UploadFileDto_Response
-                {
-                    IsResult = true,
-                    Data = fullPath,
-                    Msg = TEXTSUCCESS
-                };
-
-                return ResponseResult.Success(dto);
             }
             catch (Exception ex)
             {
+                var part = $"{data.SaveFilePart}\\{data.BillNo}";
+                if (Directory.Exists(part))
+                {
+                    Directory.Delete(part, true);
+                }
                 return ResponseResult.Failure<UploadFileDto_Response>(ex.Message);
             }
         }
