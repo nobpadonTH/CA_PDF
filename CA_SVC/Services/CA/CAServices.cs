@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,26 +21,24 @@ namespace CA_SVC.Services.CA
     {
         private const string TEXTSUCCESS = "Success";
 
-        // Endpoint
-        private const string _ca = "https://uat-sign.one.th/webservice/api/v2/signing/pdfSigning-V3";
-
         private readonly RestClient _client;
-        private readonly ServiceURL _configulation;
+        private readonly CASetting _configulation;
 
-        public CAServices(IOptions<ServiceURL> configuration)
+        public CAServices(IOptions<CASetting> configuration)
         {
             // Get configuration
             _configulation = configuration.Value;
 
             // Set client's configuration
-            _client = new RestClient(_configulation.SendSmsApi);
+            _client = new RestClient(_configulation.Endpoint);
             _client.UseNewtonsoftJson();
 
             // Check HttpRequest and set Client's Header certificate
-            var certFile = Path.Combine("D:\\Work\\CA\\smileTPA", "smileTPA.p12");
-            var pass = "P@ssw0rd";
+            var certFile = Path.Combine(_configulation.CertificatePart, _configulation.FileName);
+            var pass = _configulation.Password;
             X509Certificate2 certificate = new X509Certificate2(certFile, pass);
             _client.ClientCertificates = new X509CertificateCollection() { certificate };
+            Log.Information($"[CAServices] - Check HttpRequest and set Client's Header certificate");
         }
 
         public async Task<ServiceResponse<UploadFileArrayDto_Response>> GetFilesInDirectory(UploadPDFFromPartDto_Requesr part)
@@ -72,13 +71,13 @@ namespace CA_SVC.Services.CA
                     var obj = new
                     {
                         pdfData = item,
-                        cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
+                        cadData = _configulation.CadData,
                         certifyLevel = "CERTIFY",
                         overwriteOriginal = false
                     };
 
                     // Create request
-                    var request = new RestRequest(_ca, DataFormat.Json);
+                    var request = new RestRequest(_configulation.Endpoint, DataFormat.Json);
                     request.AddJsonBody(obj);
 
                     // Attemp request
@@ -119,6 +118,7 @@ namespace CA_SVC.Services.CA
             }
             catch (Exception ex)
             {
+                Log.Error(ex, $"[GetFilesInDirectory] - {ex.Message}.");
                 return ResponseResult.Failure<UploadFileArrayDto_Response>(ex.Message);
             }
         }
@@ -162,13 +162,13 @@ namespace CA_SVC.Services.CA
                     var obj = new
                     {
                         pdfData = pdf,
-                        cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
+                        cadData = _configulation.CadData,
                         certifyLevel = "CERTIFY",
                         overwriteOriginal = false,
                     };
 
                     // Create request
-                    var request = new RestRequest(_ca, DataFormat.Json);
+                    var request = new RestRequest(_configulation.Endpoint, DataFormat.Json);
                     request.AddJsonBody(obj);
 
                     // Attemp request
@@ -221,6 +221,7 @@ namespace CA_SVC.Services.CA
             }
             catch (Exception ex)
             {
+                Log.Error(ex, $"[UploadFile_UploadPDFSigningDto_Request] - {ex.Message}.");
                 var part = $"{data.SaveFilePart}\\{data.BillNo}";
                 if (Directory.Exists(part))
                 {
@@ -266,7 +267,7 @@ namespace CA_SVC.Services.CA
                     {
                         pdfData = pdf,
                         sadData = "",
-                        cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
+                        cadData = _configulation.CadData,
                         reason = "ทดสอบการลงนาม",
                         location = "TH",
                         certifyLevel = "NON-CERTIFY",
@@ -279,7 +280,7 @@ namespace CA_SVC.Services.CA
                     };
 
                     // Create request
-                    var request = new RestRequest(_ca, DataFormat.Json);
+                    var request = new RestRequest(_configulation.Endpoint, DataFormat.Json);
                     request.AddJsonBody(obj);
 
                     // Attemp request
@@ -342,6 +343,7 @@ namespace CA_SVC.Services.CA
             }
             catch (Exception ex)
             {
+                Log.Error(ex, $"[UploadFile_UploadPDFSigningSignatureDto_Request] - {ex.Message}.");
                 var part = $"{data.SaveFilePart}\\{data.BillNo}";
                 if (Directory.Exists(part))
                 {
@@ -383,14 +385,14 @@ namespace CA_SVC.Services.CA
                     var obj = new
                     {
                         pdfData = pdf,
-                        cadData = "sy1ORJpPOgb/vnoPFmONy1UJaQ//ge4pYxXPvscdQ7Lc3tcQV0yGXucxPjmGbJ4yylTfB1+PE56t62N26PKU0PV0NQOayAXjkhCjOXn0DihAQxECDLzYT15XkhlnjYnHtyEFnM4L/YrerOrqqiyq9hVA+Ptys7oVTdfIozAhXYY=",
+                        cadData = _configulation.CadData,
                         certifyLevel = "NON-CERTIFY",
                         visibleSignature = "Invisible",
                         overwriteOriginal = true
                     };
 
                     // Create request
-                    var request = new RestRequest(_ca, DataFormat.Json);
+                    var request = new RestRequest(_configulation.Endpoint, DataFormat.Json);
                     request.AddJsonBody(obj);
 
                     // Attemp request
@@ -442,6 +444,7 @@ namespace CA_SVC.Services.CA
             }
             catch (Exception ex)
             {
+                Log.Error(ex, $"[UploadFileNoSignature] - {ex.Message}.");
                 var part = $"{data.SaveFilePart}\\{data.BillNo}";
                 if (Directory.Exists(part))
                 {

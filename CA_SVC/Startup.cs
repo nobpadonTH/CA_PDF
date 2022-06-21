@@ -82,6 +82,7 @@ namespace CA_SVC
             //------Options ------
             services.Configure<ServiceURL>(Configuration.GetSection("ServiceURL"));
             services.Configure<OAuthSetting>(Configuration.GetSection("OAuth"));
+            services.Configure<CASetting>(Configuration.GetSection("CASetting"));
             //--------------------
 
             //------RestShape Client------
